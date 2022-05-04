@@ -1,34 +1,37 @@
 package com.empire.announcementservice.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-
 @Entity
-@Table(name = "category")
+@Table(name = "tb_category")
 public class Category implements Serializable {
-    private static final long serialVersionUID = 1L;
+    private static final long  serialVersionUID = 1L;
+
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Integer id;
     private String type;
     private String description;
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name="category_id")
-    private List<Category> category;
 
-    public Category() {
+    @JsonManagedReference
+    @ManyToMany(mappedBy="categories")
+    private List<Announcement> announcements = new ArrayList();
+
+    public Category(){
     }
 
-    public Category(Integer id, String type, String description) {
-        super();
-        this.id = id;
+    public Category(String type, String description, List<Announcement> announcements) {
         this.type = type;
         this.description = description;
+        this.announcements = announcements;
     }
 
     public Integer getId() {
@@ -55,21 +58,20 @@ public class Category implements Serializable {
         this.description = description;
     }
 
-    @Override
-    public String toString() {
-        return "CategoryRequestModel{" +
-                "id=" + id +
-                ", type='" + type + '\'' +
-                ", description='" + description + '\'' +
-                '}';
+    public List<Announcement> getAnnouncements() {
+        return announcements;
+    }
+
+    public void setAnnouncements(List<Announcement> announcements) {
+        this.announcements = announcements;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Category that = (Category) o;
-        return id.equals(that.id);
+        Category category = (Category) o;
+        return id.equals(category.id);
     }
 
     @Override
